@@ -10,7 +10,7 @@ import (
 	"github.com/tursodatabase/go-libsql"
 )
 
-func getChannels() {
+func findVideoId(substr string) (string, error) {
 	// Set up the database
 	primaryUrl := os.Getenv("TURSO_DATABASE_URL")
 	authToken := os.Getenv("TURSO_AUTH_TOKEN")
@@ -18,8 +18,7 @@ func getChannels() {
 	dbName := "local.db"
 	dir, err := os.MkdirTemp("", "libsql-*")
 	if err != nil {
-		fmt.Println("Error creating temporary directory:", err)
-		os.Exit(1)
+		return "", err
 	}
 	defer os.RemoveAll(dir)
 
@@ -32,8 +31,7 @@ func getChannels() {
 	)
 
 	if err != nil {
-		fmt.Println("Error creating connector:", err)
-		os.Exit(1)
+		return "", err
 	}
 	defer connector.Close()
 
@@ -41,31 +39,27 @@ func getChannels() {
 	defer db.Close()
 
 	// Do something with the database
-	rows, err := db.Query("SELECT * FROM channels;")
+	rows, err := db.Query("SELECT video_id FROM posts where video_id like ?;", "%"+substr)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to execute query: %v\n", err)
-		os.Exit(1)
+		return "", err
 	}
 	defer rows.Close()
 
-	// var channels []Channel
-
 	for rows.Next() {
-		var channel Channel
+		var post Post
 
-		if err := rows.Scan(&channel.ID, &channel.Title); err != nil {
-			fmt.Println("Error scanning row:", err)
+		if err := rows.Scan(&post.video_id); err != nil {
+			return "", err
 		}
 
-		// channels = append(channels, channel)
-		fmt.Println(channel.ID, channel.Title)
+		return post.video_id, nil
 	}
-
-	// fmt.Println(len(channels))
 
 	if err := rows.Err(); err != nil {
-		fmt.Println("Error during rows iteration:", err)
+		return "", err
 	}
+
+	return "", nil
 }
 
 func hasRegistered(id int64) bool {
@@ -149,7 +143,7 @@ func registerChannel(id int64, title string, password string) string {
 		return "Error registering channel!"
 	}
 
-	return "Registered successfully!"
+	return "Registered successfully! You can now log in."
 }
 
 func loginChannel(id int64, password string) string {
@@ -204,4 +198,43 @@ func loginChannel(id int64, password string) string {
 	}
 
 	return ""
+}
+
+func createPost(id int64, title string, rating int, description string, tags string, video_id string, video_path string, thumbnail_id string, thumbnail_path string, g_thumbnail_id string, g_thumbnail_path string) string {
+	// Set up the database
+	primaryUrl := os.Getenv("TURSO_DATABASE_URL")
+	authToken := os.Getenv("TURSO_AUTH_TOKEN")
+
+	dbName := "local.db"
+	dir, err := os.MkdirTemp("", "libsql-*")
+
+	if err != nil {
+		return "Error creating temporary directory!"
+	}
+
+	defer os.RemoveAll(dir)
+
+	dbPath := filepath.Join(dir, dbName)
+	syncInterval := time.Minute
+
+	connector, err := libsql.NewEmbeddedReplicaConnector(dbPath, primaryUrl,
+		libsql.WithAuthToken(authToken),
+		libsql.WithSyncInterval(syncInterval),
+	)
+
+	if err != nil {
+		return "Error creating db connector!"
+	}
+	defer connector.Close()
+
+	db := sql.OpenDB(connector)
+	defer db.Close()
+
+	// Do something with the database
+	_, err = db.Query("INSERT INTO posts VALUES (?, ? , ?, ?, ?, ?, ?, ?, ?, ?, ?)", id, title, rating, description, tags, video_id, video_path, thumbnail_id, thumbnail_path, g_thumbnail_id, g_thumbnail_path)
+	if err != nil {
+		return "Error creating post!"
+	}
+
+	return "Post created successfully!"
 }

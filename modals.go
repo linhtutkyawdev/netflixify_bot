@@ -5,3 +5,7 @@ type Channel struct {
 	Title    string
 	Password string
 }
+
+type Post struct {
+	video_id string
+}
