@@ -229,8 +229,7 @@ func loginHandler(b *tele.Bot) tele.HandlerFunc {
 												generated_thumbnail := &tele.Photo{File: thumbnail, Caption: "Description: " + description}
 												photoInlineButtons := &tele.ReplyMarkup{}
 												btnPublish := inlineButtons.Data("🌐 Publish", "Publish")
-
-												btnWatch := inlineButtons.URL("🍿 Watch", os.Getenv("BOT_URL")+"?start="+video.FileID[19:])
+												btnWatch := inlineButtons.URL("🍿 Watch", os.Getenv("BOT_URL")+"?start="+video.FileID[15:])
 												btnCheckChannel := inlineButtons.URL("🔎 Check", channel.InviteLink)
 												btnCheck := inlineButtons.URL("🔎 Check", os.Getenv("BOT_URL"))
 												photoInlineButtons.Inline(photoInlineButtons.Row(btnPublish, btnCheckChannel))
@@ -265,7 +264,7 @@ func loginHandler(b *tele.Bot) tele.HandlerFunc {
 												generated_thumbnail := &tele.Photo{File: tele.FromDisk("tmp/thumbnail.png"), Caption: "Description: " + description}
 												photoInlineButtons := &tele.ReplyMarkup{}
 												btnPublish := inlineButtons.Data("🌐 Publish", "Publish")
-												btnWatch := inlineButtons.URL("🍿 Watch", os.Getenv("BOT_URL")+"?start="+video.FileID[19:][19:])
+												btnWatch := inlineButtons.URL("🍿 Watch", os.Getenv("BOT_URL")+"?start="+video.FileID[15:])
 												btnCheckChannel := inlineButtons.URL("🔎 Check", channel.InviteLink)
 												btnCheck := inlineButtons.URL("🔎 Check", os.Getenv("BOT_URL"))
 												photoInlineButtons.Inline(photoInlineButtons.Row(btnPublish, btnCheckChannel))
