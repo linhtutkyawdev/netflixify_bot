@@ -136,12 +136,17 @@ func loginHandler(b *tele.Bot) tele.HandlerFunc {
 				btnSettings := menu.Text("⚙ Settings")
 
 				// Setting buttons
+				btnRefresh := menu.Text("⟳ Refresh")
 				btnHelp := menu.Text("ℹ Help")
 				btnBack := menu.Text("⬅ Back")
 
 				b.Handle(&btnSettings, func(c tele.Context) error {
-					menu.Reply(menu.Row(btnHelp), menu.Row(btnBack))
+					menu.Reply(menu.Row(btnRefresh), menu.Row(btnHelp, btnBack))
 					return c.Send("Settings", menu)
+				})
+
+				b.Handle(&btnRefresh, func(c tele.Context) error {
+					return c.Send(refreshPosts(b))
 				})
 
 				b.Handle(&btnHelp, func(c tele.Context) error {
@@ -230,9 +235,10 @@ func loginHandler(b *tele.Bot) tele.HandlerFunc {
 												photoInlineButtons := &tele.ReplyMarkup{}
 												btnPublish := inlineButtons.Data("🌐 Publish", "Publish")
 												btnWatch := inlineButtons.URL("🍿 Watch", os.Getenv("BOT_URL")+"?start="+video.FileID[15:])
+												btnTakeDown := inlineButtons.URL("🔥 Take Down The Post", os.Getenv("BOT_URL")+"?start=del"+video.FileID[20:])
 												btnCheckChannel := inlineButtons.URL("🔎 Check", channel.InviteLink)
 												btnCheck := inlineButtons.URL("🔎 Check", os.Getenv("BOT_URL"))
-												photoInlineButtons.Inline(photoInlineButtons.Row(btnPublish, btnCheckChannel))
+												photoInlineButtons.Inline(photoInlineButtons.Row(btnPublish, btnCheckChannel), photoInlineButtons.Row(btnTakeDown))
 
 												msg, err := b.Send(c.Sender(), generated_thumbnail, photoInlineButtons)
 												if err != nil {
@@ -265,9 +271,10 @@ func loginHandler(b *tele.Bot) tele.HandlerFunc {
 												photoInlineButtons := &tele.ReplyMarkup{}
 												btnPublish := inlineButtons.Data("🌐 Publish", "Publish")
 												btnWatch := inlineButtons.URL("🍿 Watch", os.Getenv("BOT_URL")+"?start="+video.FileID[15:])
+												btnTakeDown := inlineButtons.URL("🔥 Take Down The Post", os.Getenv("BOT_URL")+"?start=del%20"+video.FileID[20:])
 												btnCheckChannel := inlineButtons.URL("🔎 Check", channel.InviteLink)
 												btnCheck := inlineButtons.URL("🔎 Check", os.Getenv("BOT_URL"))
-												photoInlineButtons.Inline(photoInlineButtons.Row(btnPublish, btnCheckChannel))
+												photoInlineButtons.Inline(photoInlineButtons.Row(btnPublish, btnCheckChannel), photoInlineButtons.Row(btnTakeDown))
 
 												msg, err := b.Send(c.Sender(), generated_thumbnail, photoInlineButtons)
 												if err != nil {
@@ -334,31 +341,7 @@ func loginHandler(b *tele.Bot) tele.HandlerFunc {
 
 							return c.Send("Please send the video description.")
 						})
-						// b.Handle(tele.OnVideo, func(c tele.Context) error {
-						// 	if c.Message().Video == nil {
-						// 		return c.Send("Video thumbnail is invalid")
-						// 	}
-						// 	if c.Message().Video.Duration > 10 {
-						// 		return c.Send("Video must be less than 10 seconds")
-						// 	}
 
-						// 	thumbnail_id := c.Message().Video.FileID
-
-						// 	handleDetail(b, id, thumbnail_id)
-
-						// 	return c.Send("Please send the video tilte.")
-						// })
-
-						// b.Handle(tele.OnVideo, nil)
-						// // selector.Inline(
-						// // 	selector.Row(btnYes, btnNo),
-						// // )
-						// _, err := c.Message().Video.Send(b, &tele.Chat{ID: -1002085983072}, &tele.SendOptions{
-						// 	ReplyMarkup: selector,
-						// })
-
-						// return err
-						// })
 						return c.Send("Please send the rating. (between 1 to 100)", selector)
 					})
 					return c.Send("Please send the post title.", selector)

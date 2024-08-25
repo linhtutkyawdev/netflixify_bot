@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -34,7 +35,21 @@ func main() {
 
 		// on payload
 		if c.Message().Payload != "" {
+			// payload starts with "del"
+
 			vid, err := findVideoId(c.Message().Payload)
+
+			if strings.HasPrefix(c.Message().Payload, "del") {
+				// remove prefix
+				_, err := deleteVideo(vid)
+				if err != nil {
+					log.Fatal(err)
+					c.Send("Cannot delete the video you are locking for!")
+				}
+
+				return c.Send("Successfully deleted the video!")
+			}
+
 			if err != nil {
 				c.Send("Cannot find the video you are locking for!")
 			}
@@ -84,26 +99,22 @@ func main() {
 	})
 
 	b.Handle(tele.OnText, func(c tele.Context) error {
-		return c.Send("Please click on /start!")
-	})
-
-	b.Handle(tele.OnPhoto, func(c tele.Context) error {
-		photo, err := b.FileByID(c.Message().Photo.FileID)
+		f, err := b.FileByID(c.Message().Text)
 		if err != nil {
-			return nil
+			log.Fatal(err)
+			return c.Send("No file found")
 		}
-		return c.Send(photo.FilePath)
-	})
+		c.Send(f.FilePath)
+		return c.Send(&tele.Photo{File: f})
 
-	b.Handle(tele.OnVideo, func(c tele.Context) error {
-		video, err := b.FileByID(c.Message().Video.FileID)
-		if err != nil {
-			return nil
-		}
-		return c.Send(video.FilePath)
+		// return c.Send("Please click on /start!")
 	})
 
 	b.Handle(tele.OnChannelPost, channelHandlers(b))
+
+	for range time.Tick(time.Hour * 1) {
+		refreshPosts(b)
+	}
 
 	b.Start()
 }
