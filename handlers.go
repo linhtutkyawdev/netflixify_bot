@@ -136,7 +136,7 @@ func loginHandler(b *tele.Bot) tele.HandlerFunc {
 				btnSettings := menu.Text("⚙ Settings")
 
 				// Setting buttons
-				btnRefresh := menu.Text("⟳ Refresh")
+				btnRefresh := menu.Text("🔁 Refresh")
 				btnHelp := menu.Text("ℹ Help")
 				btnBack := menu.Text("⬅ Back")
 
@@ -205,7 +205,7 @@ func loginHandler(b *tele.Bot) tele.HandlerFunc {
 										}
 
 										b.Handle(tele.OnText, func(c tele.Context) error {
-											return c.Send("You need to send a video", selector)
+											return c.Send("You need to send a photo]", selector)
 										})
 
 										b.Handle(tele.OnPhoto, func(c tele.Context) error {
@@ -271,7 +271,7 @@ func loginHandler(b *tele.Bot) tele.HandlerFunc {
 												photoInlineButtons := &tele.ReplyMarkup{}
 												btnPublish := inlineButtons.Data("🌐 Publish", "Publish")
 												btnWatch := inlineButtons.URL("🍿 Watch", os.Getenv("BOT_URL")+"?start="+video.FileID[15:])
-												btnTakeDown := inlineButtons.URL("🔥 Take Down The Post", os.Getenv("BOT_URL")+"?start=del%20"+video.FileID[20:])
+												btnTakeDown := inlineButtons.URL("🔥 Take Down The Post", os.Getenv("BOT_URL")+"?start=del"+video.FileID[20:])
 												btnCheckChannel := inlineButtons.URL("🔎 Check", channel.InviteLink)
 												btnCheck := inlineButtons.URL("🔎 Check", os.Getenv("BOT_URL"))
 												photoInlineButtons.Inline(photoInlineButtons.Row(btnPublish, btnCheckChannel), photoInlineButtons.Row(btnTakeDown))
@@ -307,39 +307,23 @@ func loginHandler(b *tele.Bot) tele.HandlerFunc {
 										})
 
 										b.Handle(tele.OnVideo, func(c tele.Context) error {
-											if c.Message().Video == nil {
-												return c.Send("Thumbnail is invalid", selector)
-											}
-											if c.Message().Video.FileSize > 10*1024*1024 {
-												return c.Send("Thumbnail must be less than 10MB! Please try again.", selector)
-											}
-											if c.Message().Video.Width < c.Message().Video.Height {
-												return c.Send("Thumbnail must be landscape", selector)
-											}
-											if c.Message().Video.Duration > 10 {
-												return c.Send("Thumbnail must not be longer than 10 seconds", selector)
-											}
-
-											thumbnail := c.Message().Video
-											// create post with thumbnail
-											b.Handle(tele.OnVideo, func(c tele.Context) error {
-												if c.Message().Video == nil {
-													return c.Send("Video is invalid")
-												}
-												return c.Send("Creating post with following data.\nTitle: " + title + "\nDescription: " + description + "\nTags: " + tags + "\nThumbnail: " + thumbnail.FileID + "\nVideo: " + c.Message().Video.FileID)
-											})
-
-											return c.Send("Please send the video.")
+											return c.Send("Please send a photo as thumbnail.", selector)
 										})
 
-										return c.Send("Please send a thumbnail for the video.")
+										// btnRedoThumbnail := selector.Data("🔄 Redo", "Redo")
+										// selector.Inline(selector.Row(btnCancel, btnRedoThumbnail))
+										// b.Handle(&btnRedoThumbnail, func(c tele.Context) error {
+										// 	// from line 207 to line 319 :inclusive
+										// })
+
+										return c.Send("Please send a thumbnail for the video.", selector)
 									})
-									return c.Send("Please send the video.")
+									return c.Send("Please send the video.", selector)
 								})
-								return c.Send("Please send the video tags. 	(e.g. \"tag1, tag2, tag3\")")
+								return c.Send("Please send the video tags. 	(e.g. \"tag1, tag2, tag3\")", selector)
 							})
 
-							return c.Send("Please send the video description.")
+							return c.Send("Please send the video description.", selector)
 						})
 
 						return c.Send("Please send the rating. (between 1 to 100)", selector)

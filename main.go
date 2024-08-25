@@ -36,12 +36,9 @@ func main() {
 		// on payload
 		if c.Message().Payload != "" {
 			// payload starts with "del"
-
-			vid, err := findVideoId(c.Message().Payload)
-
 			if strings.HasPrefix(c.Message().Payload, "del") {
 				// remove prefix
-				_, err := deleteVideo(vid)
+				err := deleteVideo(c.Message().Payload[3:])
 				if err != nil {
 					log.Fatal(err)
 					c.Send("Cannot delete the video you are locking for!")
@@ -49,6 +46,8 @@ func main() {
 
 				return c.Send("Successfully deleted the video!")
 			}
+
+			vid, err := findVideoId(c.Message().Payload)
 
 			if err != nil {
 				c.Send("Cannot find the video you are locking for!")
@@ -112,9 +111,19 @@ func main() {
 
 	b.Handle(tele.OnChannelPost, channelHandlers(b))
 
-	for range time.Tick(time.Hour * 1) {
-		refreshPosts(b)
-	}
+	// ticker := time.NewTicker(time.Hour)
 
+	// // Run the scheduled function in a goroutine so it doesn't block the main program
+	// go func() {
+	// 	for {
+	// 		msg := refreshPosts(b)
+	// 		if msg != "Post paths updated successfully!" {
+	// 			log.Fatal(msg)
+	// 		}
+	// 		<-ticker.C
+	// 	}
+	// }()
+
+	log.Println("Bot is now running.  Press CTRL-C to exit.")
 	b.Start()
 }

@@ -65,7 +65,7 @@ func findVideoId(substr string) (string, error) {
 	return "", nil
 }
 
-func deleteVideo(id string) (string, error) {
+func deleteVideo(sub_id string) error {
 	// Set up the database
 	primaryUrl := os.Getenv("TURSO_DATABASE_URL")
 	authToken := os.Getenv("TURSO_AUTH_TOKEN")
@@ -73,7 +73,7 @@ func deleteVideo(id string) (string, error) {
 	dbName := "local.db"
 	dir, err := os.MkdirTemp("", "libsql-*")
 	if err != nil {
-		return "", err
+		return err
 	}
 	defer os.RemoveAll(dir)
 
@@ -86,7 +86,7 @@ func deleteVideo(id string) (string, error) {
 	)
 
 	if err != nil {
-		return "", err
+		return err
 	}
 	defer connector.Close()
 
@@ -94,12 +94,12 @@ func deleteVideo(id string) (string, error) {
 	defer db.Close()
 
 	// Do something with the database
-	_, err = db.Query("DELETE FROM posts where video_id = ?;", "%"+id)
+	_, err = db.Query("DELETE FROM posts where video_id like ?;", "'%"+sub_id+"'")
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	return "", nil
+	return nil
 }
 
 func hasRegistered(id int64) bool {
