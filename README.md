@@ -76,7 +76,6 @@ go run .
 </p>
 
 ## Screen Records
-
-###[How to watch a video.](https://drive.google.com/file/d/14Nc_AHrT2S8f9YvQ_CuLZaA3OEUHBd1Y/view?usp=drive_link)
-###[How to create a video post.](https://drive.google.com/file/d/10AUd58lErnTrT3844c3pdFWb2mrO6YM-/view?usp=drive_link)
-###[How to create a video thumbnail.](https://drive.google.com/file/d/1GzNykhCFqFlqj3HhbbQOJv64S4Q7x8CZ/view?usp=drive_link)
+- [How to watch a video.](https://drive.google.com/file/d/14Nc_AHrT2S8f9YvQ_CuLZaA3OEUHBd1Y/view?usp=drive_link)
+- [How to create a video post.](https://drive.google.com/file/d/10AUd58lErnTrT3844c3pdFWb2mrO6YM-/view?usp=drive_link)
+- [How to create a video thumbnail.](https://drive.google.com/file/d/1GzNykhCFqFlqj3HhbbQOJv64S4Q7x8CZ/view?usp=drive_link)
