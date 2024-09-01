@@ -77,7 +77,11 @@ go run .
 
 ## Screen Records
 <p>
+    [movie.mp4](https://drive.google.com/file/d/14Nc_AHrT2S8f9YvQ_CuLZaA3OEUHBd1Y/view?usp=drive_link)
 
-<video src="https://drive.google.com/file/d/14Nc_AHrT2S8f9YvQ_CuLZaA3OEUHBd1Y/view?usp=drive_link" width="200"/>
+<video width="200" controls>
+  <source src="https://drive.google.com/file/d/14Nc_AHrT2S8f9YvQ_CuLZaA3OEUHBd1Y/view?usp=drive_link" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 </p>
